@@ -1,0 +1,18 @@
+backend:
+  name: github
+  repo: salma-beam/turab-website
+  branch: main
+
+media_folder: "images"
+
+collections:
+  - name: "info"
+    label: "Restaurant Info"
+    files:
+      - label: "Opening Hours & Contact"
+        name: "info"
+        file: "data/info.json"
+        fields:
+          - { label: "Phone", name: "phone", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Opening Hours", name: "hours", widget: "text" }
