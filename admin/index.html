@@ -1,11 +1,753 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Content Manager</title>
-  </head>
-  <body>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Turab — Berlin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300;1,9..144,400&family=Barlow+Condensed:wght@600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --terra:     #7E2410;   /* exact logo terracotta */
+      --terra-mid: #A33318;
+      --terra-lt:  #C4532A;
+      --cream:     #F2E8D9;
+      --parchment: #E8DCCB;
+      --sand:      #D4C4A8;
+      --ink:       #1A1510;
+      --earth:     #4A3828;
+      --stone:     #7A6A58;
+      --white:     #FAF6EE;
+      --sage:      #6E7D5E;
+
+      --font-logo:    'Barlow Condensed', sans-serif;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body:    'Jost', sans-serif;
+
+      --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* ─── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ─── GRAIN OVERLAY ──────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 3rem;
+      background: rgba(242,232,217,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(126,36,16,0.09);
+    }
+    .nav-logo-wrap { display: flex; align-items: center; }
+    /* inline SVG logo */
+    .logo-mark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      gap: 0;
+    }
+    .logo-mark .lm-latin {
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: 0.12em;
+      color: var(--terra);
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .logo-mark .lm-arabic {
+      font-size: 0.95rem;
+      color: var(--terra);
+      direction: rtl;
+      font-family: 'Noto Naskh Arabic','Arabic Typesetting',serif;
+      line-height: 1;
+      text-align: right;
+      margin-top: 1px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+    .nav-links a {
+      position: relative;
+      padding-bottom: 2px;
+      color: var(--earth);
+      transition: color 0.2s;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0; height: 1px;
+      background: var(--terra);
+      transition: width 0.3s var(--ease);
+    }
+    .nav-links a:hover { color: var(--terra); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ─── HERO ───────────────────────────────────────────── */
+    .hero {
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--cream);
+      padding-top: 5rem;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 75% 55% at 65% 35%, rgba(126,36,16,0.11) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 45% at 15% 75%, rgba(110,125,94,0.09) 0%, transparent 55%),
+        radial-gradient(ellipse 30% 30% at 85% 80%, rgba(196,83,42,0.07) 0%, transparent 50%);
+    }
+    .hero-rule {
+      position: absolute;
+      top: 50%; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(126,36,16,0.12) 30%, rgba(126,36,16,0.12) 70%, transparent);
+      transform: translateY(-50%);
+    }
+    .hero-wave {
+      position: absolute;
+      bottom: -1px; left: 50%;
+      transform: translateX(-50%);
+      width: 130%;
+      height: 120px;
+      background: var(--white);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    .hero-content {
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeUp 1.2s var(--ease) both;
+    }
+    .hero-wordmark {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 2.2rem;
+    }
+    .hero-latin {
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: clamp(5rem, 18vw, 15rem);
+      letter-spacing: 0.07em;
+      line-height: 0.88;
+      color: var(--terra);
+      text-transform: uppercase;
+    }
+    .hero-arabic {
+      font-size: clamp(2.2rem, 7.5vw, 6.5rem);
+      line-height: 1.1;
+      color: var(--terra);
+      direction: rtl;
+      font-family: 'Noto Naskh Arabic','Arabic Typesetting',serif;
+      font-weight: 400;
+      opacity: 0.85;
+    }
+    .hero-tagline {
+      font-size: 0.76rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--stone);
+      font-weight: 500;
+    }
+    .hero-tagline span { color: var(--terra-lt); opacity: 0.55; margin: 0 0.7rem; }
+    .hero-scroll {
+      position: absolute;
+      bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--stone);
+      z-index: 2;
+      animation: fadeUp 2s 0.8s var(--ease) both;
+    }
+    .hero-scroll-line {
+      width: 1px; height: 38px;
+      background: linear-gradient(to bottom, var(--terra), transparent);
+      animation: lineGrow 1.5s 1.4s var(--ease) both;
+      transform-origin: top;
+    }
+
+    /* ─── SHARED ─────────────────────────────────────────── */
+    section { padding: 6rem 0; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 3rem; }
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--terra);
+      font-weight: 500;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 28px; height: 1px;
+      background: var(--terra);
+      flex-shrink: 0;
+    }
+
+    /* ─── ABOUT ──────────────────────────────────────────── */
+    .about {
+      background: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .about::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 50%;
+      transform: translateX(-50%);
+      width: 130%; height: 90px;
+      background: var(--cream);
+      border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    .about-watermark {
+      position: absolute;
+      right: -0.05em; top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: 30vw;
+      color: var(--parchment);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 6rem;
+      align-items: center;
+      position: relative; z-index: 1;
+    }
+    .about-headline {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3.5vw, 3.2rem);
+      font-weight: 300;
+      line-height: 1.2;
+      margin-bottom: 2rem;
+    }
+    .about-headline em { font-style: italic; color: var(--terra); }
+    .about-arabic-lg {
+      font-size: 5rem;
+      color: var(--sand);
+      direction: rtl;
+      font-family: 'Noto Naskh Arabic','Arabic Typesetting',serif;
+      line-height: 1; user-select: none;
+    }
+    .about-body p {
+      color: var(--earth);
+      font-size: 1rem;
+      line-height: 1.9;
+      margin-bottom: 1.2rem;
+    }
+    .about-body p:last-child { margin-bottom: 0; }
+
+    /* ─── MENU ───────────────────────────────────────────── */
+    .menu { background: var(--cream); }
+    .menu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3.5rem;
+      border-bottom: 1px solid var(--sand);
+      padding-bottom: 2rem;
+    }
+    .menu-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300;
+      font-style: italic;
+    }
+    .menu-note {
+      font-size: 0.75rem;
+      color: var(--stone);
+      letter-spacing: 0.06em;
+      text-align: right;
+      max-width: 220px;
+      line-height: 1.65;
+    }
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .menu-col {
+      padding: 0 2.5rem;
+      border-left: 1px solid var(--sand);
+    }
+    .menu-col:first-child { border-left: none; padding-left: 0; }
+    .menu-col:last-child { padding-right: 0; }
+    .menu-cat-latin {
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--terra);
+    }
+    .menu-cat-sub {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--stone);
+      margin-top: 0.15rem;
+      margin-bottom: 1.8rem;
+    }
+    .menu-item {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(212,196,168,0.45);
+    }
+    .menu-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .menu-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 0.22rem;
+    }
+    .menu-item-name { font-weight: 500; font-size: 0.87rem; color: var(--ink); }
+    .menu-item-price {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.96rem;
+      color: var(--terra-mid);
+      white-space: nowrap;
+      font-weight: 300;
+    }
+    .menu-item-desc { font-size: 0.78rem; color: var(--stone); line-height: 1.65; }
+
+    /* ─── HOURS ──────────────────────────────────────────── */
+    .hours {
+      background: var(--ink);
+      color: var(--cream);
+      position: relative;
+      overflow: hidden;
+    }
+    .hours::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 55% 55% at 85% 55%, rgba(126,36,16,0.22) 0%, transparent 60%),
+        radial-gradient(ellipse 35% 35% at 10% 20%, rgba(196,83,42,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hours-watermark {
+      position: absolute;
+      left: -0.08em; bottom: -0.25em;
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: 42vw;
+      color: rgba(255,255,255,0.018);
+      line-height: 1;
+      user-select: none; pointer-events: none;
+    }
+    .hours .section-label { color: var(--terra-lt); }
+    .hours .section-label::before { background: var(--terra-lt); }
+    .hours-inner {
+      display: grid;
+      grid-template-columns: 1.1fr 1px 0.9fr;
+      gap: 5rem;
+      align-items: start;
+      position: relative; z-index: 1;
+    }
+    .hours-sep { background: rgba(255,255,255,0.07); min-height: 240px; }
+    .hours-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      line-height: 1.15;
+      margin-bottom: 2.5rem;
+    }
+    .hours-heading em { font-style: italic; color: var(--terra-lt); }
+    .hours-table { width: 100%; border-collapse: collapse; }
+    .hours-table tr { border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .hours-table tr:last-child { border-bottom: none; }
+    .hours-table td { padding: 0.85rem 0; font-size: 0.86rem; }
+    .hours-table td:first-child {
+      font-size: 0.67rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: rgba(242,232,217,0.4);
+      width: 42%;
+    }
+    .hours-table td:last-child { text-align: right; color: var(--cream); }
+    .hours-table tr.closed td:last-child { color: rgba(242,232,217,0.22); font-style: italic; }
+    .hours-right {}
+    .hours-logo-dim {
+      margin-bottom: 2rem;
+    }
+    .hours-logo-dim .hl {
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: 2rem;
+      letter-spacing: 0.1em;
+      color: var(--terra-lt);
+      opacity: 0.35;
+      line-height: 1;
+    }
+    .hours-logo-dim .ha {
+      display: block;
+      font-size: 1rem;
+      color: var(--terra-lt);
+      opacity: 0.25;
+      direction: rtl;
+      font-family: 'Noto Naskh Arabic',serif;
+      margin-top: 2px;
+    }
+    .hours-address {
+      font-size: 0.84rem;
+      color: rgba(242,232,217,0.42);
+      line-height: 2;
+    }
+    .hours-address strong {
+      display: block;
+      color: var(--cream);
+      font-weight: 400;
+      font-size: 0.88rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+    .hours-address a {
+      color: var(--terra-lt);
+      border-bottom: 1px solid rgba(196,83,42,0.25);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .hours-address a:hover { color: var(--cream); border-color: rgba(242,232,217,0.3); }
+    .hours-note {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.74rem;
+      color: rgba(242,232,217,0.28);
+      line-height: 1.75;
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      background: #0E0A07;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      padding: 1.8rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.67rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(242,232,217,0.2);
+    }
+    .footer-logo {
+      font-family: var(--font-logo);
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.2em;
+      color: rgba(242,232,217,0.32);
+    }
+    footer a { color: rgba(242,232,217,0.28); transition: color 0.2s; }
+    footer a:hover { color: var(--terra-lt); }
+
+    /* ─── ANIMATIONS ─────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes lineGrow {
+      from { transform: scaleY(0); }
+      to   { transform: scaleY(1); }
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media (max-width: 860px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.5rem; }
+      .container { padding: 0 1.5rem; }
+      section { padding: 4rem 0; }
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .about-watermark { display: none; }
+      .menu-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .menu-note { text-align: left; max-width: 100%; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .menu-col { border-left: none; border-top: 1px solid var(--sand); padding: 2rem 0 0; }
+      .menu-col:first-child { border-top: none; padding-top: 0; }
+      .hours-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hours-sep { display: none; }
+      .hours-watermark { display: none; }
+      footer { flex-direction: column; gap: 0.7rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo-wrap">
+      <div class="logo-mark">
+        <span class="lm-latin">TURAB</span>
+        <span class="lm-arabic">تراب</span>
+      </div>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#menu">Menu</a></li>
+      <li><a href="#hours">Visit</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-rule"></div>
+    <div class="hero-content">
+      <div class="hero-wordmark">
+        <div class="hero-latin">TURAB</div>
+        <div class="hero-arabic">تراب</div>
+      </div>
+      <p class="hero-tagline">
+        Levantine Kitchen
+        <span>·</span>
+        Bar
+        <span>·</span>
+        Berlin
+      </p>
+    </div>
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+    <div class="hero-wave"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="about" id="about">
+    <div class="about-watermark">T</div>
+    <div class="container">
+      <div class="about-grid">
+        <div>
+          <p class="section-label">Our Story</p>
+          <h2 class="about-headline">Rooted in<br><em>soil &amp; season</em></h2>
+          <div class="about-arabic-lg">تراب</div>
+        </div>
+        <div class="about-body">
+          <p>
+            Turab — Arabic for <em>soil</em> — is our way of saying that everything begins in the earth.
+            We cook from the land: vegetables pulled at their peak, grains slow-toasted, herbs bruised fresh.
+            The traditions are Levantine. The ingredients are here, now, in season.
+          </p>
+          <p>
+            Our menu draws from the kitchens of Lebanon, Syria, and Palestine — dishes that have been 
+            passed down, reinterpreted, argued over at family tables for generations. 
+            We cook them with the same love, and a little more smoke.
+          </p>
+          <p>
+            The bar follows the same logic: bright, aromatic, grounded. Natural wines, 
+            arak-forward cocktails, and drinks that remember where they come from.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="menu" id="menu">
+    <div class="container">
+      <div class="menu-header">
+        <div>
+          <p class="section-label">What We Serve</p>
+          <h2 class="menu-title">The Menu</h2>
+        </div>
+        <p class="menu-note">
+          Dishes are designed to share.<br>
+          Please tell us about allergies.
+        </p>
+      </div>
+      <div class="menu-grid">
+
+        <div class="menu-col">
+          <div class="menu-cat-latin">Small Plates</div>
+          <div class="menu-cat-sub">To share</div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Hummus Turab</span>
+              <span class="menu-item-price">9 €</span>
+            </div>
+            <p class="menu-item-desc">Slow-cooked chickpeas, tahini, warm olive oil, dukkah</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Charred Eggplant</span>
+              <span class="menu-item-price">11 €</span>
+            </div>
+            <p class="menu-item-desc">Open-flame eggplant, pomegranate, walnut, sumac yoghurt</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Fattet Bandora</span>
+              <span class="menu-item-price">10 €</span>
+            </div>
+            <p class="menu-item-desc">Slow-roasted tomatoes, crisp bread, chickpeas, herb oil</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Kibbeh Nayeh</span>
+              <span class="menu-item-price">14 €</span>
+            </div>
+            <p class="menu-item-desc">Raw lamb, bulgur, pine nut, spearmint, flatbread</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Labneh &amp; Za'atar</span>
+              <span class="menu-item-price">8 €</span>
+            </div>
+            <p class="menu-item-desc">Strained yoghurt, wild thyme, good olive oil, warm bread</p>
+          </div>
+        </div>
+  
+        <div class="menu-col">
+          <div class="menu-cat-latin">Drinks</div>
+          <div class="menu-cat-sub">Wine &amp; cocktails</div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Arak Sour</span>
+              <span class="menu-item-price">12 €</span>
+            </div>
+            <p class="menu-item-desc">Arak, fresh lemon, honey, egg white, anise bitters</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Rose &amp; Cardamom</span>
+              <span class="menu-item-price">12 €</span>
+            </div>
+            <p class="menu-item-desc">Gin, rosewater, cardamom, lemon, soda</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Tamarind Mule</span>
+              <span class="menu-item-price">11 €</span>
+            </div>
+            <p class="menu-item-desc">Vodka, tamarind, ginger, lime, soda</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Natural Wine</span>
+              <span class="menu-item-price">8–11 €</span>
+            </div>
+            <p class="menu-item-desc">Rotating glass from small producers — ask us what's open</p>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-row">
+              <span class="menu-item-name">Jallab</span>
+              <span class="menu-item-price">5 €</span>
+            </div>
+            <p class="menu-item-desc">Grape, rose, tamarind — alcohol-free (v)</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- HOURS -->
+  <section class="hours" id="hours">
+    <div class="hours-watermark">T</div>
+    <div class="container">
+      <div class="hours-inner">
+        <div>
+          <p class="section-label">Opening Hours</p>
+          <h2 class="hours-heading">When to<br>find us <em>open</em></h2>
+          <table class="hours-table">
+            <tr class="closed"><td>Montag</td><td>Geschlossen</td></tr>
+            <tr><td>Dienstag</td><td>18:00 – 00:00</td></tr>
+            <tr><td>Mittwoch</td><td>18:00 – 00:00</td></tr>
+            <tr><td>Donnerstag</td><td>18:00 – 01:00</td></tr>
+            <tr><td>Freitag</td><td>17:00 – 02:00</td></tr>
+            <tr><td>Samstag</td><td>17:00 – 02:00</td></tr>
+            <tr class="closed"><td>Sonntag</td><td>Geschlossen</td></tr>
+          </table>
+        </div>
+        <div class="hours-sep"></div>
+        <div class="hours-right">
+          <div class="hours-logo-dim">
+            <div class="hl">TURAB</div>
+            <span class="ha">تراب</span>
+          </div>
+          <div class="hours-address">
+            <strong>Restaurant &amp; Bar · Berlin</strong>
+            Reuterstraße 36<br>
+            12047 Berlin<br><br>
+            <a href="mailto:hallo@turab-berlin.de">hallo@turab-berlin.de</a>
+          </div>
+          <div class="hours-note">
+            Walk-ins welcome. No reservations.<br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-logo">TURAB</span>
+    <span>© 2025 Turab Berlin</span>
+    <span><a href="mailto:hallo@turab-berlin.de">hallo@turab-berlin.de</a></span>
+  </footer>
+
+</body>
 </html>
