@@ -1,18 +1,143 @@
 backend:
   name: github
-  repo: salma-beam/turab-website
+  repo: salma-beam/turab-website  
   branch: main
 
 media_folder: "images"
+public_folder: "/images"
 
 collections:
+
+  # ─── CONTACT & LOCATION ──────────────────────────────────
   - name: "info"
     label: "Restaurant Info"
     files:
-      - label: "Opening Hours & Contact"
-        name: "info"
-        file: "data/info.json"
+      - label: "Contact & Location"
+        name: "contact"
+        file: "data/contact.json"
         fields:
-          - { label: "Phone", name: "phone", widget: "string" }
-          - { label: "Email", name: "email", widget: "string" }
-          - { label: "Opening Hours", name: "hours", widget: "text" }
+          - { label: "Restaurant Name",       name: "name",    widget: "string", default: "Turab" }
+          - { label: "Street Address",         name: "address", widget: "string" }
+          - { label: "City & Postcode",        name: "city",    widget: "string" }
+          - { label: "Email Address",          name: "email",   widget: "string" }
+          - { label: "Kitchen closing note",   name: "note",    widget: "string", required: false,
+              hint: "e.g. Kitchen closes one hour before closing time." }
+
+  # ─── OPENING HOURS ────────────────────────────────────────
+  - name: "hours"
+    label: "Opening Hours"
+    files:
+      - label: "Weekly Hours"
+        name: "hours"
+        file: "data/hours.json"
+        fields:
+          - label: "Monday"
+            name: "monday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: false }
+              - { label: "Hours (e.g. 18:00 – 00:00)", name: "hours", widget: "string", required: false }
+          - label: "Tuesday"
+            name: "tuesday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: true }
+              - { label: "Hours",  name: "hours", widget: "string" }
+          - label: "Wednesday"
+            name: "wednesday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: true }
+              - { label: "Hours",  name: "hours", widget: "string" }
+          - label: "Thursday"
+            name: "thursday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: true }
+              - { label: "Hours",  name: "hours", widget: "string" }
+          - label: "Friday"
+            name: "friday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: true }
+              - { label: "Hours",  name: "hours", widget: "string" }
+          - label: "Saturday"
+            name: "saturday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: true }
+              - { label: "Hours",  name: "hours", widget: "string" }
+          - label: "Sunday"
+            name: "sunday"
+            widget: "object"
+            fields:
+              - { label: "Open?",  name: "open",  widget: "boolean", default: false }
+              - { label: "Hours",  name: "hours", widget: "string", required: false }
+
+  # ─── ABOUT ────────────────────────────────────────────────
+  - name: "about"
+    label: "About / Our Story"
+    files:
+      - label: "About Section"
+        name: "about"
+        file: "data/about.json"
+        fields:
+          - { label: "Headline — first line",   name: "headline1", widget: "string",
+              hint: "e.g. Rooted in" }
+          - { label: "Headline — italic part",  name: "headline2", widget: "string",
+              hint: "e.g. soil & season  (this part appears in terracotta italic)" }
+          - label: "Paragraphs"
+            name: "paragraphs"
+            widget: "list"
+            label_singular: "Paragraph"
+            field: { label: "Text", name: "text", widget: "text" }
+
+  # ─── MENU ─────────────────────────────────────────────────
+  - name: "menu"
+    label: "Menu"
+    files:
+
+      - label: "Small Plates"
+        name: "small_plates"
+        file: "data/menu_small_plates.json"
+        fields:
+          - { label: "Section title",    name: "title", widget: "string", default: "Small Plates" }
+          - { label: "Section subtitle", name: "sub",   widget: "string", default: "To begin & to share" }
+          - label: "Dishes"
+            name: "items"
+            widget: "list"
+            label_singular: "Dish"
+            fields:
+              - { label: "Name",        name: "name",  widget: "string" }
+              - { label: "Price",       name: "price", widget: "string", hint: "e.g. 9 €" }
+              - { label: "Description", name: "desc",  widget: "text" }
+
+      - label: "Mains"
+        name: "mains"
+        file: "data/menu_mains.json"
+        fields:
+          - { label: "Section title",    name: "title", widget: "string", default: "Mains" }
+          - { label: "Section subtitle", name: "sub",   widget: "string", default: "Slow & considered" }
+          - label: "Dishes"
+            name: "items"
+            widget: "list"
+            label_singular: "Dish"
+            fields:
+              - { label: "Name",        name: "name",  widget: "string" }
+              - { label: "Price",       name: "price", widget: "string", hint: "e.g. 24 €" }
+              - { label: "Description", name: "desc",  widget: "text" }
+
+      - label: "Drinks"
+        name: "drinks"
+        file: "data/menu_drinks.json"
+        fields:
+          - { label: "Section title",    name: "title", widget: "string", default: "Drinks" }
+          - { label: "Section subtitle", name: "sub",   widget: "string", default: "Natural wine & cocktails" }
+          - label: "Drinks"
+            name: "items"
+            widget: "list"
+            label_singular: "Drink"
+            fields:
+              - { label: "Name",        name: "name",  widget: "string" }
+              - { label: "Price",       name: "price", widget: "string", hint: "e.g. 12 €" }
+              - { label: "Description", name: "desc",  widget: "text" }

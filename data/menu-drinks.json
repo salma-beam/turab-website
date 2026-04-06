@@ -1,0 +1,11 @@
+{
+  "title": "Drinks",
+  "sub": "Natural wine & cocktails",
+  "items": [
+    { "name": "Arak Sour",       "price": "12 €",   "desc": "Arak, fresh lemon, honey, egg white, anise bitters" },
+    { "name": "Rose & Cardamom", "price": "12 €",   "desc": "Gin, rosewater, cardamom, lemon, soda" },
+    { "name": "Tamarind Mule",   "price": "11 €",   "desc": "Vodka, tamarind, ginger, lime, soda" },
+    { "name": "Natural Wine",    "price": "8–11 €", "desc": "Rotating glass from small producers — ask us what's open" },
+    { "name": "Jallab",          "price": "5 €",    "desc": "Grape, rose, tamarind — alcohol-free (v)" }
+  ]
+}

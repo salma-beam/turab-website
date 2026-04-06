@@ -1,0 +1,11 @@
+{
+  "title": "Small Plates",
+  "sub": "To begin & to share",
+  "items": [
+    { "name": "Hummus Turab",     "price": "9 €",  "desc": "Slow-cooked chickpeas, tahini, warm olive oil, dukkah" },
+    { "name": "Charred Eggplant", "price": "11 €", "desc": "Open-flame eggplant, pomegranate, walnut, sumac yoghurt" },
+    { "name": "Fattet Bandora",   "price": "10 €", "desc": "Slow-roasted tomatoes, crisp bread, chickpeas, herb oil" },
+    { "name": "Kibbeh Nayeh",     "price": "14 €", "desc": "Raw lamb, bulgur, pine nut, spearmint, flatbread" },
+    { "name": "Labneh & Za'atar", "price": "8 €",  "desc": "Strained yoghurt, wild thyme, good olive oil, warm bread" }
+  ]
+}

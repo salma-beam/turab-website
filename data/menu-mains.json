@@ -1,0 +1,11 @@
+{
+  "title": "Mains",
+  "sub": "Slow & considered",
+  "items": [
+    { "name": "Samke Harra",   "price": "26 €", "desc": "Roasted fish, harissa, coriander-walnut chermoula, lemon" },
+    { "name": "Freekeh Djaj",  "price": "24 €", "desc": "Smoked grain, slow-braised chicken, allspice, almonds" },
+    { "name": "Yakhnet Ads",   "price": "19 €", "desc": "Black lentil stew, caramelised onion, chard, labneh (v)" },
+    { "name": "Lamb Shoulder", "price": "29 €", "desc": "8-hour shoulder, saffron rice, dried lime, green sauce" },
+    { "name": "Maqluba",       "price": "22 €", "desc": "Upside-down rice, roasted cauliflower, pine nut, raisin (v)" }
+  ]
+}
