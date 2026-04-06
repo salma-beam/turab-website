@@ -524,9 +524,9 @@
         const [about, hours, small, mains, drinks, contact] = await Promise.all([
           loadJSON('/data/about.json'),
           loadJSON('/data/hours.json'),
-          loadJSON('/data/menu_small_plates.json'),
-          loadJSON('/data/menu_mains.json'),
-          loadJSON('/data/menu_drinks.json'),
+          loadJSON('/data/menu-smallplates.json'),
+          loadJSON('/data/menu-mains.json'),
+          loadJSON('/data/menu-drinks.json'),
           loadJSON('/data/contact.json'),
         ]);
 
